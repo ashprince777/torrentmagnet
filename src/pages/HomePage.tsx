@@ -1,18 +1,26 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { Search, Shield, Zap, Database } from 'lucide-react';
+import { Search, Shield, Zap, Database, Clock } from 'lucide-react';
+import { useSearchHistory } from '../hooks/useSearchHistory';
 import styles from './HomePage.module.css';
 
 export const HomePage = () => {
     const [query, setQuery] = useState('');
     const navigate = useNavigate();
+    const { history, addToHistory, clearHistory } = useSearchHistory();
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         if (query.trim()) {
+            addToHistory(query.trim());
             navigate(`/search?q=${encodeURIComponent(query.trim())}`);
         }
+    };
+
+    const handleHistoryClick = (q: string) => {
+        addToHistory(q);
+        navigate(`/search?q=${encodeURIComponent(q)}`);
     };
 
     return (
@@ -47,6 +55,31 @@ export const HomePage = () => {
                             </button>
                         </div>
                     </form>
+
+                    {history.length > 0 && (
+                        <div className={styles.historySection}>
+                            <div className={styles.historyHeader}>
+                                <div className={styles.historyTitle}>
+                                    <Clock size={14} style={{ marginRight: '6px', verticalAlign: 'text-bottom' }} />
+                                    Recent Searches
+                                </div>
+                                <button onClick={clearHistory} className={styles.clearHistory}>
+                                    Clear
+                                </button>
+                            </div>
+                            <div className={styles.historyChips}>
+                                {history.map((item, index) => (
+                                    <div
+                                        key={index}
+                                        className={styles.historyChip}
+                                        onClick={() => handleHistoryClick(item)}
+                                    >
+                                        {item}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     <div className={styles.features}>
                         <div className={styles.featureItem}>
