@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Check, Download, Users, HardDrive, Calendar } from 'lucide-react';
+import { useToast } from '../../../context/ToastContext';
 import type { Torrent } from '../../../types';
 import styles from './TorrentCard.module.css';
 import clsx from 'clsx';
@@ -10,11 +11,15 @@ interface TorrentCardProps {
 
 export const TorrentCard = ({ torrent }: TorrentCardProps) => {
     const [copied, setCopied] = useState(false);
+    const { showToast } = useToast();
 
     const handleCopy = () => {
         navigator.clipboard.writeText(torrent.magnet).then(() => {
             setCopied(true);
+            showToast('Magnet link copied successfully!', 'success');
             setTimeout(() => setCopied(false), 2000);
+        }).catch(() => {
+            showToast('Failed to copy magnet link', 'error');
         });
     };
 
