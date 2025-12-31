@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import { Search, Shield, Zap, Database, Clock } from 'lucide-react';
 import { useSearchHistory } from '../hooks/useSearchHistory';
 import styles from './HomePage.module.css';
+import { TrendingSection } from '../components/features/TrendingSection';
 
 export const HomePage = () => {
     const [query, setQuery] = useState('');
@@ -95,6 +96,9 @@ export const HomePage = () => {
                             <span>Public Metadata Only</span>
                         </div>
                     </div>
+
+                    <TrendingSection title="Popular Downloads" type="trending" />
+                    <TrendingSection title="Recently Added" type="recent" />
 
                     <p className={styles.tagline}>Free • No signup • No files hosted</p>
                 </div>

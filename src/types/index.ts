@@ -17,4 +17,6 @@ export interface SearchParams {
 
 export interface ITorrentService {
   search(params: SearchParams): Promise<Torrent[]>;
+  getTrending(): Promise<Torrent[]>;
+  getRecent(): Promise<Torrent[]>;
 }

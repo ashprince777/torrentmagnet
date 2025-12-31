@@ -90,5 +90,51 @@ export const TorrentService: ITorrentService = {
             console.error("Torrent search failed:", error);
             throw error;
         }
+    },
+
+    async getTrending(): Promise<Torrent[]> {
+        try {
+            const response = await fetch('/api/precompiled/data_top100_all.json');
+            if (!response.ok) throw new Error(`API Error: ${response.status}`);
+
+            const data: ApibayResult[] = await response.json();
+
+            return data.slice(0, 50).map(item => ({
+                id: item.id,
+                title: item.name,
+                size: formatSize(parseInt(item.size)),
+                seeders: parseInt(item.seeders),
+                leechers: parseInt(item.leechers),
+                category: mapCategory(item.category),
+                uploadDate: formatDate(parseInt(item.added)),
+                magnet: `magnet:?xt=urn:btih:${item.info_hash}&dn=${encodeURIComponent(item.name)}&tr=udp://tracker.opentrackr.org:1337/announce`
+            }));
+        } catch (error) {
+            console.error("Trending fetch failed:", error);
+            return [];
+        }
+    },
+
+    async getRecent(): Promise<Torrent[]> {
+        try {
+            const response = await fetch('/api/precompiled/data_top100_recent.json');
+            if (!response.ok) throw new Error(`API Error: ${response.status}`);
+
+            const data: ApibayResult[] = await response.json();
+
+            return data.slice(0, 50).map(item => ({
+                id: item.id,
+                title: item.name,
+                size: formatSize(parseInt(item.size)),
+                seeders: parseInt(item.seeders),
+                leechers: parseInt(item.leechers),
+                category: mapCategory(item.category),
+                uploadDate: formatDate(parseInt(item.added)),
+                magnet: `magnet:?xt=urn:btih:${item.info_hash}&dn=${encodeURIComponent(item.name)}&tr=udp://tracker.opentrackr.org:1337/announce`
+            }));
+        } catch (error) {
+            console.error("Recent fetch failed:", error);
+            return [];
+        }
     }
 };
