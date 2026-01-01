@@ -3,7 +3,6 @@ import { TrendingUp, Clock, Loader2 } from 'lucide-react';
 import { TorrentService } from '../../services/TorrentService';
 import { TorrentCard } from './SearchResults/TorrentCard';
 import type { Torrent } from '../../types';
-import styles from './TrendingSection.module.css';
 
 interface TrendingSectionProps {
     title: string;
@@ -36,18 +35,18 @@ export const TrendingSection = ({ title, type }: TrendingSectionProps) => {
     if (!loading && torrents.length === 0) return null;
 
     return (
-        <div className={styles.trendingContainer}>
-            <div className={styles.trendingHeader}>
-                {type === 'trending' ? <TrendingUp className={styles.trendingIcon} /> : <Clock className={styles.trendingIcon} />}
+        <div className="w-full">
+            <div className="flex items-center gap-2 mb-6 text-xl font-semibold text-white">
+                {type === 'trending' ? <TrendingUp className="text-primary" size={24} /> : <Clock className="text-accent" size={24} />}
                 {title}
             </div>
 
             {loading ? (
-                <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
-                    <Loader2 className="animate-spin text-blue-500" size={32} />
+                <div className="flex justify-center p-8">
+                    <Loader2 className="animate-spin text-primary" size={32} />
                 </div>
             ) : (
-                <div className={styles.trendingGrid}>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {torrents.map(torrent => (
                         <TorrentCard key={torrent.id} torrent={torrent} />
                     ))}

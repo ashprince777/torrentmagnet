@@ -2,10 +2,10 @@ import React from 'react';
 
 const PrivacyPolicyPage: React.FC = () => {
     return (
-        <div className="container mx-auto px-6 py-20 max-w-3xl text-gray-200">
+        <div className="container mx-auto px-6 py-20 max-w-3xl text-text-secondary">
             <h1 className="text-4xl md:text-5xl font-bold mb-10 text-white leading-tight">Privacy Policy</h1>
 
-            <div className="space-y-8 text-lg leading-relaxed text-gray-300">
+            <div className="space-y-8 text-lg leading-relaxed">
                 <p>
                     Your privacy is important to us. It is MagnetFinder's policy to respect your privacy regarding any information we may collect from you across our website.
                 </p>
@@ -13,7 +13,7 @@ const PrivacyPolicyPage: React.FC = () => {
                 <div>
                     <h2 className="text-2xl font-bold mt-10 mb-4 text-white">Log Files</h2>
                     <p>
-                        MagnetFinder follows a standard procedure of using log files. These files log visitors when they visit websites. However, we are committed to minimizing data retention. We perform <strong className="text-blue-400">no long-term logging of IP addresses</strong> or search history associated with specific users.
+                        MagnetFinder follows a standard procedure of using log files. These files log visitors when they visit websites. However, we are committed to minimizing data retention. We perform <strong className="text-primary">no long-term logging of IP addresses</strong> or search history associated with specific users.
                     </p>
                 </div>
 
@@ -31,7 +31,7 @@ const PrivacyPolicyPage: React.FC = () => {
                     </p>
                 </div>
 
-                <div className="bg-gray-800/50 p-6 rounded-lg border border-gray-700/50 mt-8 backdrop-blur-sm">
+                <div className="bg-surface/50 p-6 rounded-lg border border-white/5 mt-8 backdrop-blur-sm">
                     <h2 className="text-xl font-bold mb-2 text-white">Consent</h2>
                     <p>
                         By using our website, you hereby consent to our Privacy Policy and agree to its Terms and Conditions.

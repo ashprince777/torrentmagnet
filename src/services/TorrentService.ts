@@ -65,20 +65,32 @@ export const TorrentService: ITorrentService = {
                 id: item.id,
                 title: item.name,
                 size: formatSize(parseInt(item.size)),
+                rawSize: parseInt(item.size),
                 seeders: parseInt(item.seeders),
                 leechers: parseInt(item.leechers),
                 category: mapCategory(item.category),
                 uploadDate: formatDate(parseInt(item.added)),
+                status: item.status,
                 magnet: `magnet:?xt=urn:btih:${item.info_hash}&dn=${encodeURIComponent(item.name)}&tr=udp://tracker.opentrackr.org:1337/announce`
             }));
 
+            // Filter by Category
             if (params.category && params.category !== 'All') {
                 results = results.filter(t => t.category === params.category);
+            }
+
+            // Filter by Size
+            if (params.minSize !== undefined) {
+                results = results.filter(t => t.rawSize >= params.minSize!);
+            }
+            if (params.maxSize !== undefined) {
+                results = results.filter(t => t.rawSize <= params.maxSize!);
             }
 
             if (params.sort) {
                 results.sort((a, b) => {
                     if (params.sort === 'seeders') return b.seeders - a.seeders;
+                    if (params.sort === 'size') return b.rawSize - a.rawSize;
                     if (params.sort === 'date') return new Date(b.uploadDate).getTime() - new Date(a.uploadDate).getTime();
                     return 0;
                 });
@@ -103,10 +115,12 @@ export const TorrentService: ITorrentService = {
                 id: item.id,
                 title: item.name,
                 size: formatSize(parseInt(item.size)),
+                rawSize: parseInt(item.size),
                 seeders: parseInt(item.seeders),
                 leechers: parseInt(item.leechers),
                 category: mapCategory(item.category),
                 uploadDate: formatDate(parseInt(item.added)),
+                status: item.status,
                 magnet: `magnet:?xt=urn:btih:${item.info_hash}&dn=${encodeURIComponent(item.name)}&tr=udp://tracker.opentrackr.org:1337/announce`
             }));
         } catch (error) {
@@ -126,10 +140,12 @@ export const TorrentService: ITorrentService = {
                 id: item.id,
                 title: item.name,
                 size: formatSize(parseInt(item.size)),
+                rawSize: parseInt(item.size),
                 seeders: parseInt(item.seeders),
                 leechers: parseInt(item.leechers),
                 category: mapCategory(item.category),
                 uploadDate: formatDate(parseInt(item.added)),
+                status: item.status,
                 magnet: `magnet:?xt=urn:btih:${item.info_hash}&dn=${encodeURIComponent(item.name)}&tr=udp://tracker.opentrackr.org:1337/announce`
             }));
         } catch (error) {
