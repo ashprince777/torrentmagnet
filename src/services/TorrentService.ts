@@ -46,14 +46,10 @@ export const TorrentService: ITorrentService = {
                 return [];
             }
 
-            // Use local Vite proxy
+            // Use Vite dev proxy to forward to apibay.org (avoids CORS)
             const url = `/api/q.php?q=${encodeURIComponent(query)}&cat=`;
-
             const response = await fetch(url);
-
-            if (!response.ok) {
-                throw new Error(`API Error: ${response.status}`);
-            }
+            if (!response.ok) throw new Error(`API Error: ${response.status}`);
 
             const data: ApibayResult[] = await response.json();
 
