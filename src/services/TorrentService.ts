@@ -46,8 +46,8 @@ export const TorrentService: ITorrentService = {
                 return [];
             }
 
-            // Use Vite dev proxy to forward to apibay.org (avoids CORS)
-            const url = `/api/q.php?q=${encodeURIComponent(query)}&cat=`;
+            // Call Vercel serverless function (local dev: Vite middleware handles it)
+            const url = `/api/search?q=${encodeURIComponent(query)}`;
             const response = await fetch(url);
             if (!response.ok) throw new Error(`API Error: ${response.status}`);
 
@@ -102,7 +102,7 @@ export const TorrentService: ITorrentService = {
 
     async getTrending(): Promise<Torrent[]> {
         try {
-            const response = await fetch('/api/precompiled/data_top100_all.json');
+            const response = await fetch('/api/trending');
             if (!response.ok) throw new Error(`API Error: ${response.status}`);
 
             const data: ApibayResult[] = await response.json();
@@ -127,7 +127,7 @@ export const TorrentService: ITorrentService = {
 
     async getRecent(): Promise<Torrent[]> {
         try {
-            const response = await fetch('/api/precompiled/data_top100_recent.json');
+            const response = await fetch('/api/recent');
             if (!response.ok) throw new Error(`API Error: ${response.status}`);
 
             const data: ApibayResult[] = await response.json();

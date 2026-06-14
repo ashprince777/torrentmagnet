@@ -17,8 +17,9 @@ export const useTorrentSearch = () => {
             const data = await TorrentService.search(params);
             setResults(data);
         } catch (err) {
-            setError('Failed to fetch torrents. Please try again.');
-            console.error(err);
+            const msg = err instanceof Error ? err.message : String(err);
+            setError(`Search failed: ${msg}`);
+            console.error('Search error:', err);
         } finally {
             setIsLoading(false);
         }
