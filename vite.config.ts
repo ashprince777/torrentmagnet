@@ -58,7 +58,7 @@ function torrentApiPlugin() {
     name: 'torrent-api',
     configureServer(server: any) {
       // Handle search: GET /api/search?q=QUERY
-      server.middlewares.use('/api/search', async (req: IncomingMessage, res: ServerResponse, next: () => void) => {
+      server.middlewares.use('/api/search', async (req: IncomingMessage, res: ServerResponse, _next: () => void) => {
         const urlObj = new URL(req.url ?? '/', 'http://localhost')
         const q = urlObj.searchParams.get('q')
         if (!q) {
