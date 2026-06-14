@@ -4,6 +4,7 @@ const MIRRORS = [
   'https://apibay.org',
   'https://tpb.party',
   'https://thepiratebay.rocks',
+  'https://piratebay.live',
 ];
 
 function fetchUrl(url) {
@@ -13,17 +14,19 @@ function fetchUrl(url) {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
         'Accept': 'application/json, */*',
       },
-      timeout: 10000,
+      timeout: 8000,
     }, (res) => {
+      if (res.statusCode >= 400) {
+        res.resume();
+        reject(new Error(`HTTP ${res.statusCode} from ${url}`));
+        return;
+      }
       let data = '';
       res.on('data', (chunk) => (data += chunk));
-      res.on('end', () => {
-        if (res.statusCode >= 400) reject(new Error(`HTTP ${res.statusCode}`));
-        else resolve(data);
-      });
+      res.on('end', () => resolve(data));
     });
-    req.on('timeout', () => { req.destroy(); reject(new Error('Timeout')); });
-    req.on('error', reject);
+    req.on('timeout', () => { req.destroy(); reject(new Error(`Timeout: ${url}`)); });
+    req.on('error', (err) => reject(new Error(`${err.message}: ${url}`)));
   });
 }
 
@@ -31,16 +34,16 @@ module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const errors = [];
-  for (const mirror of MIRRORS) {
-    const url = `${mirror}/precompiled/data_top100_all.json`;
-    try {
-      const data = await fetchUrl(url);
-      res.setHeader('Content-Type', 'application/json; charset=utf-8');
-      return res.status(200).send(data);
-    } catch (err) {
-      errors.push(`${mirror}: ${err.message}`);
-    }
+  const promises = MIRRORS.map((mirror) =>
+    fetchUrl(`${mirror}/precompiled/data_top100_all.json`)
+  );
+
+  try {
+    const data = await Promise.any(promises);
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    return res.status(200).send(data);
+  } catch (err) {
+    const details = err.errors ? err.errors.map((e) => e.message) : [err.message];
+    return res.status(503).json({ error: 'All mirrors failed', details });
   }
-  return res.status(503).json({ error: 'All mirrors failed', details: errors });
 };
