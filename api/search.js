@@ -15,7 +15,8 @@ async function fetchMirror(url) {
     signal: AbortSignal.timeout(8000),
   });
   if (!res.ok) {
-    throw new Error(`HTTP ${res.status} from ${url}`);
+    const errBody = await res.text().catch(() => '');
+    throw new Error(`HTTP ${res.status} from ${url} | body: ${errBody.slice(0, 150)}`);
   }
   const text = await res.text();
   const trimmed = text.trim();
