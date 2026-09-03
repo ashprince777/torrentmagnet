@@ -1,5 +1,3 @@
-const https = require('https');
-
 const MIRRORS = [
   'https://apibay.org',
   'https://tpb.party',
@@ -7,35 +5,32 @@ const MIRRORS = [
   'https://piratebay.live',
 ];
 
-function fetchUrl(url) {
-  return new Promise((resolve, reject) => {
-    const req = https.get(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        'Accept': 'application/json, */*',
-      },
-      timeout: 8000,
-    }, (res) => {
-      if (res.statusCode >= 400) {
-        res.resume();
-        reject(new Error(`HTTP ${res.statusCode} from ${url}`));
-        return;
-      }
-      let data = '';
-      res.on('data', (chunk) => (data += chunk));
-      res.on('end', () => resolve(data));
-    });
-    req.on('timeout', () => { req.destroy(); reject(new Error(`Timeout: ${url}`)); });
-    req.on('error', (err) => reject(new Error(`${err.message}: ${url}`)));
+async function fetchMirror(url) {
+  const res = await fetch(url, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'Accept': 'application/json, */*',
+    },
+    signal: AbortSignal.timeout(8000),
   });
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status} from ${url}`);
+  }
+  const text = await res.text();
+  const trimmed = text.trim();
+  if (!trimmed.startsWith('[') && !trimmed.startsWith('{')) {
+    throw new Error(`Invalid JSON response from ${url}`);
+  }
+  return text;
 }
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   const promises = MIRRORS.map((mirror) =>
-    fetchUrl(`${mirror}/precompiled/data_top100_recent.json`)
+    fetchMirror(`${mirror}/precompiled/data_top100_recent.json`)
   );
 
   try {
@@ -44,6 +39,7 @@ module.exports = async (req, res) => {
     return res.status(200).send(data);
   } catch (err) {
     const details = err.errors ? err.errors.map((e) => e.message) : [err.message];
+    console.error('[recent] All mirrors failed:', details);
     return res.status(503).json({ error: 'All mirrors failed', details });
   }
-};
+}
